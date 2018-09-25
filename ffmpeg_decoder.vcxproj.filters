@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\base\face_info.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\base\h264sei.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="netstream_reader.cpp" />
+    <ClCompile Include="ffmpeg_stream_demo.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\base\face_info.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\base\h264sei.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="netstream_reader.h" />
+    <ClInclude Include="singleton_template.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="base">
+      <UniqueIdentifier>{05508570-22ca-43c5-b9ff-717c6defb90b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
