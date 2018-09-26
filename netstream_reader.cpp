@@ -15,6 +15,7 @@ NetStreamReader::NetStreamReader() {
 	m_pCodecCtx = NULL;
 	m_videoStreamIndex = -1;
 	m_pFormatCtx = avformat_alloc_context();
+    m_pSwsCtx = nullptr;
 	
 	AVIOInterruptCB cb;
 	cb.callback = ffmpeg_interrupt_cb;
@@ -27,7 +28,7 @@ NetStreamReader::NetStreamReader() {
 NetStreamReader::~NetStreamReader() {
 	avformat_free_context(m_pFormatCtx);
 	av_frame_free(&m_pFrame);
-	sws_freeContext(m_pSwsCtx);
+    if (m_pSwsCtx) sws_freeContext(m_pSwsCtx);
 }
 
 int NetStreamReader::OpenStream(std::string strUrl, NetStreamReaderObserver *observer)
@@ -118,8 +119,6 @@ int NetStreamReader::OpenStream(std::string strUrl, NetStreamReaderObserver *obs
                             m_observer->OnSeiReceived(sei_buf, len);
                         }
                     }
-
-                    continue;
                 }
 
 				ret = avcodec_send_packet(m_pCodecCtx, &m_packet);
