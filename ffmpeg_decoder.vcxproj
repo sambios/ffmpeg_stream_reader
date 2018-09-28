@@ -118,14 +118,14 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>C:\hsyuan\third_party\ffmpeg-x64\include;.\;C:\hsyuan\base;C:\hsyuan\third_party\opencv\build\include;C:\hsyuan\third-party\getopt9\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\hsyuan\third-party\ffmpeg-4.0\include;.\;C:\hsyuan\base;C:\hsyuan\third-party\opencv\build\include;C:\hsyuan\third-party\getopt9\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>
       </DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\hsyuan\third_party\ffmpeg-x64\lib;C:\hsyuan\third_party\opencv\build\x64\vc15\lib;C:\hsyuan\third-party\getopt9\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\hsyuan\third-party\ffmpeg-4.0\lib;C:\hsyuan\third-party\opencv\build\x64\vc15\lib;C:\hsyuan\third-party\getopt9\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>avcodec.lib;avdevice.lib;avfilter.lib;avformat.lib;avutil.lib;postproc.lib;swresample.lib;swscale.lib;ws2_32.lib;opencv_world343d.lib;getoptd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

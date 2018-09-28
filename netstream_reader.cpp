@@ -116,7 +116,7 @@ int NetStreamReader::OpenStream(std::string strUrl, NetStreamReaderObserver *obs
                         uint8_t sei_buf[256];
                         int len = h264sei_packet_read(m_packet.data, m_packet.size, sei_buf, sizeof(sei_buf));
                         if (len > 0) {
-                            m_observer->OnSeiReceived(sei_buf, len);
+                            m_observer->OnSeiReceived(sei_buf, len, m_packet.pts);
                         }
                     }
                 }

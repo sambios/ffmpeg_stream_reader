@@ -33,7 +33,7 @@ class NetStreamReaderObserver {
 public:
 	virtual ~NetStreamReaderObserver() {}
 	virtual void OnDecodedFrame(const AVFrame *pFrame) = 0;
-    virtual void OnSeiReceived(uint8_t *buff, uint32_t size) = 0;
+    virtual void OnSeiReceived(uint8_t *buff, uint32_t size, int64_t pts) = 0;
 };
 
 class NetStreamReader {

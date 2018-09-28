@@ -4,21 +4,81 @@
 #include "getopt.h"
 #include "h264sei.h"
 
+
+struct TestFaceInfo {
+    int64_t pts;
+    int num;
+    cv::Rect rects[16];
+};
+
+struct TestFrame {
+    cv::Mat img;
+    int64_t pts;
+};
+
+
 class TestVideoObserver :public NetStreamReaderObserver 
 {
-    cv::Mat m_image;
+    std::list<TestFaceInfo> m_listFaceInfos;
+    std::list<TestFrame> m_listImages;
+
 public: 
     TestVideoObserver(){}
 	~TestVideoObserver(){}
 
 	void OnDecodedFrame(const AVFrame *pFrame) override {
-        m_image = avframe_to_cvmat(pFrame);
+        static int cacheCount = 0;
+        if (cacheCount < 10) {
+            TestFrame frame;
+            cv::Mat img = avframe_to_cvmat(pFrame).t();
+            frame.img = img;
+            frame.pts = pFrame->pts;
+            m_listImages.push_back(frame);
+            cacheCount++;
+            return;
+        }
 
+        TestFrame frame;
+        cv::Mat img = avframe_to_cvmat(pFrame).t();
+        frame.img = img;
+        frame.pts = pFrame->pts;
+        m_listImages.push_back(frame);
+        
+        printf("faceinfo num=%d\n", m_listFaceInfos.size());
+        if (1) {
+            TestFaceInfo faceInfo;
+
+            if (m_listFaceInfos.size() > 0) {
+                faceInfo = m_listFaceInfos.front();
+                m_listFaceInfos.pop_front();
+            }
+
+            auto frm = m_listImages.front();
+
+            m_listImages.pop_front();
+            
+            for (int i = 0; i < faceInfo.num; ++i) {
+                cv::rectangle(frm.img, faceInfo.rects[i], cv::Scalar(255, 0, 255), 2, 1, 0);
+            }
+
+            cv::imshow("test", frm.img.t());
+            cv::waitKey(10);
+        }
+        else {
+            printf("no sei\n");
+        }
+        
+      
 	}
 
-    void OnSeiReceived(uint8_t *buff, uint32_t size) {
+    void OnSeiReceived(uint8_t *buff, uint32_t size, int64_t pts) {
+        
         int face_num = buff[0];
-        cv::Mat img = m_image.t();
+      
+        TestFaceInfo faceinfo;
+        faceinfo.pts = pts;
+        faceinfo.num = face_num;
+
         int offset = 1;
         for (int i = 0; i < face_num; ++i) {
             FaceRect rc;
@@ -30,16 +90,18 @@ public:
             cvRect.width = rc.width;
             cvRect.height = rc.height;
             if (rc.x < 0 || rc.y < 0 || rc.width > 480 || rc.height > 640) {
-
+                printf("zuobiao invalid.\n");
             }
             else {
-                cv::rectangle(img, cvRect, cv::Scalar(255, 0, 255), 2, 1, 0);
+                //cv::rectangle(img, cvRect, cv::Scalar(255, 0, 255), 2, 1, 0);
+                faceinfo.rects[i] = cvRect;
             }
         }
 
+        if (face_num > 0)
+        m_listFaceInfos.push_back(faceinfo);
 
-        cv::imshow("test", img.t());
-        cv::waitKey(20);
+        
     }
 };
 
