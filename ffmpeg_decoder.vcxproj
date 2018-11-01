@@ -23,12 +23,24 @@
     <ClCompile Include="..\base\h264sei.cpp" />
     <ClCompile Include="ffmpeg_stream_demo.cpp" />
     <ClCompile Include="netstream_reader.cpp" />
+    <ClCompile Include="netstream_reader_ffmpeg.cpp" />
+    <ClCompile Include="netstream_reader_udp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\base\face_info.h" />
     <ClInclude Include="..\base\h264sei.h" />
     <ClInclude Include="netstream_reader.h" />
+    <ClInclude Include="netstream_reader_ffmpeg.h" />
+    <ClInclude Include="netstream_reader_udp.h" />
     <ClInclude Include="singleton_template.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\e3lib\apl\vs140\apl\libapl.vcxproj">
+      <Project>{68e3108d-1f9a-4de4-b8f3-23deb3713975}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\e3lib\ide\win\protocols\protocols.vcxproj">
+      <Project>{24a32853-8670-4f87-9838-2796559fe1c1}</Project>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
@@ -118,15 +130,15 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>C:\hsyuan\third-party\ffmpeg-4.0\include;.\;C:\hsyuan\base;C:\hsyuan\third-party\opencv\build\include;C:\hsyuan\third-party\getopt9\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\hsyuan\third-party\ffmpeg-4.0\include;.\;C:\hsyuan\base;C:\hsyuan\third-party\opencv\build\include;C:\hsyuan\third-party\getopt9\include;C:\hsyuan\e3lib\protocols\rtp;C:\hsyuan\e3lib\apl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>
       </DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\hsyuan\third-party\ffmpeg-4.0\lib;C:\hsyuan\third-party\opencv\build\x64\vc15\lib;C:\hsyuan\third-party\getopt9\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>avcodec.lib;avdevice.lib;avfilter.lib;avformat.lib;avutil.lib;postproc.lib;swresample.lib;swscale.lib;ws2_32.lib;opencv_world343d.lib;getoptd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\hsyuan\third-party\ffmpeg-4.0\lib;C:\hsyuan\third-party\opencv\build\x64\vc15\lib;C:\hsyuan\third-party\getopt9\lib;C:\hsyuan\third-party\jrtplib\x64-windows-cl14\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>avcodec.lib;avdevice.lib;avfilter.lib;avformat.lib;avutil.lib;postproc.lib;swresample.lib;swscale.lib;ws2_32.lib;opencv_world343d.lib;getoptd.lib;jrtplib_d.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -165,6 +177,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\hsyuan\e3lib\ide\win\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libapl.lib;protocols.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

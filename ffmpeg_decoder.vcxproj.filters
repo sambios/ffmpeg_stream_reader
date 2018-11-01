@@ -9,6 +9,8 @@
     </ClCompile>
     <ClCompile Include="netstream_reader.cpp" />
     <ClCompile Include="ffmpeg_stream_demo.cpp" />
+    <ClCompile Include="netstream_reader_udp.cpp" />
+    <ClCompile Include="netstream_reader_ffmpeg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\base\face_info.h">
@@ -19,6 +21,8 @@
     </ClInclude>
     <ClInclude Include="netstream_reader.h" />
     <ClInclude Include="singleton_template.h" />
+    <ClInclude Include="netstream_reader_udp.h" />
+    <ClInclude Include="netstream_reader_ffmpeg.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="base">

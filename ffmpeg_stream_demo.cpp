@@ -17,6 +17,67 @@ struct TestFrame {
 };
 
 
+void pase_face_info(uint8_t *buff, int size, TestFaceInfo &faceinfo)
+{
+    //TestFaceInfo faceinfo;
+    if (size == 0) {
+        faceinfo.num = 0;
+        return;
+    }
+    int face_num = buff[0];
+    faceinfo.pts = 0;
+    faceinfo.num = face_num;
+
+    int offset = 1;
+    for (int i = 0; i < face_num; ++i) {
+        FaceRect rc;
+        int len = rc.UnPack(&buff[offset], size);
+        offset += len;
+        cv::Rect cvRect;
+        cvRect.x = rc.x;
+        cvRect.y = rc.y;
+        cvRect.width = rc.width;
+        cvRect.height = rc.height;
+        if (rc.x < 0 || rc.y < 0 || rc.width > 480 || rc.height > 640) {
+            printf("zuobiao invalid.\n");
+        }
+        else {
+            //cv::rectangle(img, cvRect, cv::Scalar(255, 0, 255), 2, 1, 0);
+            faceinfo.rects[i] = cvRect;
+        }
+    }
+}
+
+cv::Mat to_cvmat(uint8_t *src_data[4], int src_linesize[4], int src_w, int src_h)
+{
+    uint8_t /**src_data[4],*/ *dst_data[4];
+    int /*src_linesize[4],*/ dst_linesize[4];
+    int dst_w, dst_h;
+
+    struct SwsContext *convert_ctx = NULL;
+    enum AVPixelFormat src_pix_fmt = AV_PIX_FMT_YUV420P;
+    enum AVPixelFormat dst_pix_fmt = AV_PIX_FMT_BGR24;
+
+
+    dst_w = src_w;
+    dst_h = src_h;
+
+    cv::Mat m;
+    m = cv::Mat(dst_h, dst_w, CV_8UC3);
+    av_image_fill_arrays(dst_data, dst_linesize, m.data, dst_pix_fmt, dst_w, dst_h, 16);
+
+    convert_ctx = sws_getContext(src_w, src_h, src_pix_fmt, dst_w, dst_h, dst_pix_fmt,
+                                 SWS_FAST_BILINEAR, NULL, NULL, NULL);
+
+    sws_scale(convert_ctx, src_data, src_linesize, 0, dst_h,
+              dst_data, dst_linesize);
+
+    sws_freeContext(convert_ctx);
+
+    return m;
+}
+
+
 class TestVideoObserver :public NetStreamReaderObserver 
 {
     std::list<TestFaceInfo> m_listFaceInfos;
@@ -26,54 +87,59 @@ public:
     TestVideoObserver(){}
 	~TestVideoObserver(){}
 
-	void OnDecodedFrame(const AVFrame *pFrame) override {
-        static int cacheCount = 0;
-        if (cacheCount < 10) {
+        void OnDecodedFrame(uint8_t *planes[3], int linesize[3], int w, int h, int64_t pts) override
+        {
+            //static int cacheCount = 7;
+
             TestFrame frame;
-            cv::Mat img = avframe_to_cvmat(pFrame).t();
+            cv::Mat img = to_cvmat(planes, linesize, w, h);
+
             frame.img = img;
-            frame.pts = pFrame->pts;
+            frame.pts = pts;
             m_listImages.push_back(frame);
-            cacheCount++;
-            return;
-        }
 
-        TestFrame frame;
-        cv::Mat img = avframe_to_cvmat(pFrame).t();
-        frame.img = img;
-        frame.pts = pFrame->pts;
-        m_listImages.push_back(frame);
-        
-        printf("faceinfo num=%d\n", m_listFaceInfos.size());
-        if (1) {
-            TestFaceInfo faceInfo;
-
-            if (m_listFaceInfos.size() > 0) {
-                faceInfo = m_listFaceInfos.front();
-                m_listFaceInfos.pop_front();
+            if (m_listImages.size() < 1) {
+                //cacheCount++;
+                return;
             }
 
-            auto frm = m_listImages.front();
+            //TestFrame frame;
+            //cv::Mat img = to_cvmat(planes, linesize, w, h);
 
-            m_listImages.pop_front();
-            
-            for (int i = 0; i < faceInfo.num; ++i) {
-                cv::rectangle(frm.img, faceInfo.rects[i], cv::Scalar(255, 0, 255), 2, 1, 0);
+            //printf("faceinfo num=%d\n", m_listFaceInfos.size());
+            if (m_listImages.size() > 0) {
+                auto frame = m_listImages.front();
+                m_listImages.pop_front();
+                TestFaceInfo faceInfo;
+                while (m_listFaceInfos.size() > 0) {
+                    faceInfo = m_listFaceInfos.front();
+                    if (1) {
+                        printf("facePTS - framePTS=%d\n", faceInfo.pts - frame.pts);
+                        for (int i = 0; i < faceInfo.num; ++i) {
+                            cv::rectangle(frame.img, faceInfo.rects[i], cv::Scalar(255, 0, 255), 2, 1, 0);
+                        }
+                        m_listFaceInfos.pop_front();
+                    }
+                    else {
+                        break;
+                    }
+                }
+
+
+                cv::imshow("test", frame.img);
+                cv::waitKey(1);
+            }
+            else {
+                printf("no sei\n");
             }
 
-            cv::imshow("test", frm.img.t());
-            cv::waitKey(10);
+
         }
-        else {
-            printf("no sei\n");
-        }
-        
-      
-	}
 
     void OnSeiReceived(uint8_t *buff, uint32_t size, int64_t pts) {
         
         int face_num = buff[0];
+        m_listFaceInfos.clear();
       
         TestFaceInfo faceinfo;
         faceinfo.pts = pts;
@@ -166,7 +232,8 @@ int main(int argc, char *argv[])
 {
     test_pack();
 
-	NetStreamReader reader;
+    std::shared_ptr<NetStreamReader> reader = NetStreamReader::create(1);
+
     TestVideoObserver observer;
     std::string bmctx_path, input_url, output_url;
     int ch = 0;
@@ -192,7 +259,7 @@ int main(int argc, char *argv[])
         }
     }
    
-	int ret = reader.OpenStream(input_url, &observer);
+	int ret = reader->OpenStream(input_url, &observer);
 	if (ret < 0) {
 		return 0;
 	}
@@ -201,7 +268,7 @@ int main(int argc, char *argv[])
 		std::this_thread::sleep_for(10 * std::chrono::seconds());
 	}
        
-        ret = reader.CloseStream();
+        ret = reader->CloseStream();
         return 0;
 }
 
