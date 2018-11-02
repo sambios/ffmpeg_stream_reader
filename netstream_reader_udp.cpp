@@ -54,7 +54,7 @@ int NetStreamReaderUdp::CloseStream()
     return 0;
 }
 
-void NetStreamReaderUdp::on_receive_frame(uint32_t ssrc, uint32_t ts, uint8_t *frame_buf, int len)
+void NetStreamReaderUdp::on_receive_frame(uint32_t ssrc, uint32_t ts, uint8_t *frame_buf, size_t len)
 {
     std::cout << "recv frame_len=" << len << std::endl;
 

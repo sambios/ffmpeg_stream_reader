@@ -38,7 +38,7 @@
     <ProjectReference Include="..\e3lib\apl\vs140\apl\libapl.vcxproj">
       <Project>{68e3108d-1f9a-4de4-b8f3-23deb3713975}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\e3lib\ide\win\protocols\protocols.vcxproj">
+    <ProjectReference Include="..\e3lib\win\protocols\protocols.vcxproj">
       <Project>{24a32853-8670-4f87-9838-2796559fe1c1}</Project>
     </ProjectReference>
   </ItemGroup>
@@ -130,7 +130,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>C:\hsyuan\third-party\ffmpeg-4.0\include;.\;C:\hsyuan\base;C:\hsyuan\third-party\opencv\build\include;C:\hsyuan\third-party\getopt9\include;C:\hsyuan\e3lib\protocols\rtp;C:\hsyuan\e3lib\apl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\hsyuan\third-party\ffmpeg-4.0\include;.\;C:\hsyuan\base;C:\hsyuan\third-party\opencv\build\include;C:\hsyuan\third-party\getopt9\include;C:\hsyuan\e3lib\protocols\include;C:\hsyuan\e3lib\apl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>
       </DisableSpecificWarnings>
     </ClCompile>

@@ -19,7 +19,7 @@ public:
     int CloseStream() override;
 
     // implements
-    virtual void on_receive_frame(uint32_t ssrc, uint32_t ts, uint8_t *frame_buf, int len) override;
+    virtual void on_receive_frame(uint32_t ssrc, uint32_t ts, uint8_t *frame_buf, size_t len) override;
 
 private:
    

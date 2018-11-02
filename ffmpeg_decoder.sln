@@ -7,7 +7,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ffmpeg_decoder", "ffmpeg_de
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libapl", "..\e3lib\apl\vs140\apl\libapl.vcxproj", "{68E3108D-1F9A-4DE4-B8F3-23DEB3713975}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "e3lib_protocols", "..\e3lib\ide\win\protocols\protocols.vcxproj", "{24A32853-8670-4F87-9838-2796559FE1C1}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "e3lib_protocols", "..\e3lib\win\protocols\protocols.vcxproj", "{24A32853-8670-4F87-9838-2796559FE1C1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
