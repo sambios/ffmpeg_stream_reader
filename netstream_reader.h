@@ -7,6 +7,7 @@ extern "C" {
 #include <libavformat/avformat.h>
 #include <libavfilter/avfilter.h>
 #include <libswscale/swscale.h>
+#include "libavutil/time.h"
 }
 
 #include "singleton_template.h"
@@ -19,7 +20,6 @@ enum StreamState {
 class FfmpegGlobal {
 public:
 	FfmpegGlobal() {
-		av_register_all();
 		avformat_network_init();
 	}
 
@@ -32,8 +32,7 @@ public:
 class NetStreamReaderObserver {
 public:
 	virtual ~NetStreamReaderObserver() {}
-	virtual void OnDecodedFrame(uint8_t *planes[3], int linesize[3], int w, int h, int64_t pts) = 0;
-        virtual void OnSeiReceived(uint8_t *buff, uint32_t size, int64_t pts) = 0;
+	virtual void OnDecodedFrame(const AVFrame* frame) = 0;
 };
 
 class NetStreamReader {

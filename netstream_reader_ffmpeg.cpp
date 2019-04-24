@@ -1,7 +1,5 @@
 #include "netstream_reader.h"
 #include "netstream_reader_ffmpeg.h"
-#include "h264sei.h"
-#include "apl.h"
 
 static int ffmpeg_interrupt_cb(void* p)
 {
@@ -82,14 +80,11 @@ int NetStreamReaderFfmpeg::OpenStream(std::string strUrl, NetStreamReaderObserve
 {
     m_observer = observer;
     AVDictionary* options = NULL;
-    av_dict_set(&options, "rtsp_transport", "tcp", 0);
-    av_dict_set(&options, "fflags", "nobuffer", 0);
-    av_dict_set(&options, "protocol_whitelist", "file,http,https,rtp,udp,tcp,tls", 0);
-
-    //strUrl = "playtest.sdp";
-    strUrl = "C:\\hsyuan\\testfiles\\sei.264";
-
-    //AVInputFormat *fmt = av_find_input_format("rtp");
+    if (strUrl.find("rtsp://") != std::string::npos) {
+        av_dict_set(&options, "rtsp_transport", "tcp", 0);
+        av_dict_set(&options, "fflags", "nobuffer", 0);
+        av_dict_set(&options, "protocol_whitelist", "file,http,https,rtp,udp,tcp,tls", 0);
+    }
 
     int err = avformat_open_input(&m_pFormatCtx, strUrl.c_str(), NULL, &options);
     if (err < 0)
@@ -169,24 +164,6 @@ int NetStreamReaderFfmpeg::OpenStream(std::string strUrl, NetStreamReaderObserve
             // handle video stream
             if (m_packet.stream_index == m_videoStreamIndex)
             {
-                if (0 == m_packet.data[0] &&
-                    0 == m_packet.data[1] &&
-                    0 == m_packet.data[2] &&
-                    1 == m_packet.data[3] &&
-                    (m_packet.data[4] & 0x1f) == 6) {
-                    if (m_observer != nullptr) {
-                        //uint8_t sei_buf[256];
-                        sei_len = h264sei_packet_read(m_packet.data, m_packet.size, sei_buf, sizeof(sei_buf));
-                        if (sei_len > 0) {
-                            printf("sei-pts = %d\n", m_packet.pts);
-                            m_observer->OnSeiReceived(sei_buf, sei_len, m_packet.pts);
-                        }
-                    }
-                }
-                else {
-                    printf("frame-pts = %d\n", m_packet.pts);
-                }
-
                 ret = avcodec_send_packet(m_pCodecCtx, &m_packet);
                 if (ret < 0) {
                     std::cout << "avcodec_send_packet error=" << ret << std::endl;
@@ -198,8 +175,7 @@ int NetStreamReaderFfmpeg::OpenStream(std::string strUrl, NetStreamReaderObserve
                 }
                 else {
                     if (m_observer != nullptr) {
-                        m_observer->OnDecodedFrame(m_pFrame->data, m_pFrame->linesize, m_pFrame->width, 
-                                                   m_pFrame->height, m_pFrame->pts);
+                        m_observer->OnDecodedFrame(m_pFrame);
                         sei_len = 0;
                     }
                 }
@@ -216,8 +192,8 @@ int NetStreamReaderFfmpeg::OpenStream(std::string strUrl, NetStreamReaderObserve
                                 << std::endl;
                 }*/
             }
-            av_free_packet(&m_packet);
-            apl_msleep(40);
+            av_packet_unref(&m_packet);
+            av_usleep(40*1000);
         }
     });
 

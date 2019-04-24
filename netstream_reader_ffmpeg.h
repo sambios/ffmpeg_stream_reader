@@ -6,7 +6,7 @@ class NetStreamReaderFfmpeg : public NetStreamReader {
     FfmpegGlobal *m_ffmpegGlobal;
     int m_state;
     NetStreamReaderObserver *m_observer;
-    bool m_bRunning{ false };
+    bool m_bRunning { false };
 public:
     NetStreamReaderFfmpeg();
     virtual ~NetStreamReaderFfmpeg();
